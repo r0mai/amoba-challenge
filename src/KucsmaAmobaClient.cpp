@@ -9,7 +9,7 @@ bool KucsmaAmobaClient::isMoveWon(
     int xp = std::get<0>(p);
     int yp = std::get<1>(p);
 
-    if (color != 0) {
+    if (color == 0) {
         std::cout << "What" << std::endl;
         return false;
     }
