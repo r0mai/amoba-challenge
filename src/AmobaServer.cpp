@@ -1,5 +1,6 @@
 
 #include <iostream>
+#include <string>
 #include "AmobaServer.hpp"
 
 namespace {
@@ -113,8 +114,7 @@ void printMap(const AmobaClient::Map& map) {
         }
         std::cout << '\n';
     }
-    std::cout << std::string(w, '-');
-    std::cout << std::endl;
+    std::cout << std::string(w, '-') << std::endl;
 }
 
 }
