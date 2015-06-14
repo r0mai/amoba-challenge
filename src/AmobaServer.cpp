@@ -1,5 +1,8 @@
 
 #include <iostream>
+#include <algorithm>
+#include <string>
+#include <random>
 #include "AmobaServer.hpp"
 #include "Map.hpp"
 
@@ -9,6 +12,12 @@ void AmobaServer::addClient(ClientPtr client) {
 
 void AmobaServer::run(int xSize, int ySize) {
     Map map(xSize, std::vector<int>(ySize, 0));
+
+
+    static std::random_device rd;
+    static std::mt19937 g(rd());
+
+    std::shuffle(clients.begin(), clients.end(), g);
 
     int clientIndex = 0;
     while (true) {
