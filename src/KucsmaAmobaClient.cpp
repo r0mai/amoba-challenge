@@ -64,8 +64,6 @@ bool KucsmaAmobaClient::isMoveWon(
     return false;
 }
 
-void KucsmaAmobaClient::randomMove(Map map, int withColor) {
-}
 
 std::vector<AmobaClient::Position> KucsmaAmobaClient::getNeighbours(
     const Map& map)
@@ -91,6 +89,66 @@ std::vector<AmobaClient::Position> KucsmaAmobaClient::getNeighbours(
     return result;
 }
 
+double KucsmaAmobaClient::runMonteCarlo(const Map& origMap, Position initialMove) {
+
+    int x = std::get<0>(initialMove);
+    int y = std::get<1>(initialMove);
+
+    int won = 0;
+    int lost = 0;
+    int draw = 0;
+
+    for (int run = 0; run < 100; ++run) {
+        Map map = origMap;
+        map[x][y] = yourColor;
+
+        int player = (yourColor + 1) % playerCount + 1;
+        bool stop = false;
+        while (!stop) {
+            auto neighbours = getNeighbours(map);
+            if (neighbours.empty()) {
+                ++draw;
+                break;
+            }
+            //win if we can
+            for (const Position& p : neighbours) {
+                if (isMoveWon(map, p, player)) {
+                    if (player == yourColor) {
+                        ++won;
+                        stop = true;
+                        break;
+                    }
+                }
+            }
+            if (stop) {
+                break;
+            }
+            // block if someone would won
+            // TODO only block the next player?
+            //
+            for (const Position& p : neighbours) {
+                if (stop) { break; }
+                for (int playeri = 1; playeri <= playerCount; ++playeri) {
+                    if (playeri == player) {
+                        continue;
+                    }
+                    if (isMoveWon(map, p, player)) {
+                        ++lost;
+                        stop = true;
+                        break;
+                    }
+                }
+            }
+            if (stop) { break; }
+            Position randMove = neighbours[rand() % neighbours.size()];
+            map[std::get<0>(randMove)][std::get<1>(randMove)] = player;
+
+            ++player; if (player == playerCount + 1) player = 1;
+        }
+    }
+    return double(won) / lost;
+}
+
 AmobaClient::Position KucsmaAmobaClient::getMove(
     const Map& map, int yourColor, int playerCount)
 {
@@ -102,9 +160,27 @@ AmobaClient::Position KucsmaAmobaClient::getMove(
     this->playerCount = playerCount;
 
     auto neighbours = getNeighbours(map);
+    if (neighbours.empty()) {
+        return Position(w/2, h/2);
+    }
+
+    //win if we can
     for (const Position& p : neighbours) {
         if (isMoveWon(map, p, yourColor)) {
             return p;
         }
     }
+    // block if someone would won
+    // TODO only block the next player?
+    for (const Position& p : neighbours) {
+        for (int player = 1; player <= playerCount; ++player) {
+            if (player == yourColor) {
+                continue;
+            }
+            if (isMoveWon(map, p, player)) {
+                return p;
+            }
+        }
+    }
+
 }
