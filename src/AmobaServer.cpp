@@ -97,6 +97,24 @@ bool hasEmpty(const AmobaClient::Map& map) {
     return false;
 }
 
+void printMap(const AmobaClient::Map& map) {
+    int w = map.size();
+    int h = map[0].size();
+
+    for (int y = 0; y < h; ++y) {
+        for (int x = 0; x < w; ++x) {
+            switch (map[x][y]) {
+                case 0: std::cout << ' '; break;
+                case 1: std::cout << 'X'; break;
+                case 2: std::cout << 'O'; break;
+                default: std::cout << map[x][y]; break;
+            }
+        }
+        std::cout << '\n';
+    }
+    std::cout << std::endl;
+}
+
 }
 
 void AmobaServer::addClient(ClientPtr client) {
@@ -108,7 +126,10 @@ void AmobaServer::run(int xSize, int ySize) {
 
     int clientIndex = 0;
     while (true) {
+        printMap(map);
+
         int winner = hasNInARow(map, clients.size() + 3);
+
         if (winner != 0) {
             std::cout << "Player " << winner << " won" << std::endl;
             return;
