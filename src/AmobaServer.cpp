@@ -101,6 +101,7 @@ void printMap(const AmobaClient::Map& map) {
     int w = map.size();
     int h = map[0].size();
 
+    std::cout << std::string(w, '-') << std::endl;
     for (int y = 0; y < h; ++y) {
         for (int x = 0; x < w; ++x) {
             switch (map[x][y]) {
@@ -112,6 +113,7 @@ void printMap(const AmobaClient::Map& map) {
         }
         std::cout << '\n';
     }
+    std::cout << std::string(w, '-');
     std::cout << std::endl;
 }
 
@@ -140,7 +142,7 @@ void AmobaServer::run(int xSize, int ySize) {
         }
 
         auto position =
-            clients[clientIndex]->getMove(map, clientIndex, clients.size());
+            clients[clientIndex]->getMove(map, clientIndex+1, clients.size());
 
         int x = std::get<0>(position);
         int y = std::get<1>(position);
@@ -155,7 +157,7 @@ void AmobaServer::run(int xSize, int ySize) {
             return;
         }
 
-        map[x][y] = clientIndex;
+        map[x][y] = clientIndex+1;
 
         clientIndex += 1;
         clientIndex %= clients.size();
