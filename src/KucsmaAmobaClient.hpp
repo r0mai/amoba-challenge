@@ -1,5 +1,7 @@
 #pragma once
 
+#include <random>
+
 #include "AmobaClient.hpp"
 
 class KucsmaAmobaClient : public AmobaClient {
@@ -16,4 +18,7 @@ private:
     int w, h;
     int yourColor;
     int playerCount;
+
+    std::random_device rd;
+    std::mt19937 generator{rd()};
 };

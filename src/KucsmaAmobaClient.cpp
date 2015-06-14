@@ -140,13 +140,14 @@ double KucsmaAmobaClient::runMonteCarlo(const Map& origMap, Position initialMove
                 }
             }
             if (stop) { break; }
-            Position randMove = neighbours[rand() % neighbours.size()];
+            std::uniform_int_distribution<> dis(0, neighbours.size() - 1);
+            Position randMove = neighbours[dis(generator)];
             map[std::get<0>(randMove)][std::get<1>(randMove)] = player;
 
             ++player; if (player == playerCount + 1) player = 1;
         }
     }
-    return double(won) / lost;
+    return won - lost;
 }
 
 AmobaClient::Position KucsmaAmobaClient::getMove(
@@ -183,7 +184,7 @@ AmobaClient::Position KucsmaAmobaClient::getMove(
         }
     }
 
-    double max = 0.0;
+    double max = std::numeric_limits<double>::min();
     Position maxPos;
     for (const Position& p : neighbours) {
         double cur = runMonteCarlo(map, p);
