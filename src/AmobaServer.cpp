@@ -106,6 +106,7 @@ void AmobaServer::addClient(ClientPtr client) {
 void AmobaServer::run() {
     AmobaClient::Map map{50, std::vector<int>{70, 0}};
 
+    int clientIndex = 0;
     while (true) {
         int winner = hasNInARow(map, clients.size() + 3);
         if (winner != 0) {
@@ -117,6 +118,26 @@ void AmobaServer::run() {
             return;
         }
 
+        auto position =
+            clients[clientIndex]->getMove(map, clientIndex, clients.size());
+
+        int x = std::get<0>(position);
+        int y = std::get<1>(position);
+
+        if (x < 0 || y < 0 || x >= map.size() || y >= map[0].size()) {
+            std::cout << "Out of bounds" << std::endl;
+            return;
+        }
+
+        if (map[x][y] != 0) {
+            std::cout << "Bad move" << std::endl;
+            return;
+        }
+
+        map[x][y] = clientIndex;
+
+        clientIndex += 1;
+        clientIndex %= clients.size();
     }
 }
 
