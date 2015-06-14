@@ -10,7 +10,7 @@ AmobaClient::Position SampleAmobaClient::getMove(
         int y = rand() % map[0].size();
 
         if (map[x][y] == 0) {
-            return {x, y};
+            return AmobaClient::Position{ x, y };
         }
     }
 }
