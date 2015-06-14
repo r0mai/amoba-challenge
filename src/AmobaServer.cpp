@@ -105,7 +105,7 @@ void printMap(const AmobaClient::Map& map) {
     for (int y = 0; y < h; ++y) {
         for (int x = 0; x < w; ++x) {
             switch (map[x][y]) {
-                case 0: std::cout << ' '; break;
+                case 0: std::cout << '.'; break;
                 case 1: std::cout << 'X'; break;
                 case 2: std::cout << 'O'; break;
                 default: std::cout << map[x][y]; break;
