@@ -183,4 +183,14 @@ AmobaClient::Position KucsmaAmobaClient::getMove(
         }
     }
 
+    double max = 0.0;
+    Position maxPos;
+    for (const Position& p : neighbours) {
+        double cur = runMonteCarlo(map, p);
+        if (cur > max) {
+            max = cur;
+            maxPos = p;
+        }
+    }
+    return maxPos;
 }
