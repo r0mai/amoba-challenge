@@ -100,4 +100,11 @@ AmobaClient::Position KucsmaAmobaClient::getMove(
     nInARow = playerCount + 2;
     this->yourColor = yourColor;
     this->playerCount = playerCount;
+
+    auto neighbours = getNeighbours(map);
+    for (const Position& p : neighbours) {
+        if (isMoveWon(map, p, yourColor)) {
+            return p;
+        }
+    }
 }
