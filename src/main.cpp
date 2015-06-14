@@ -7,6 +7,6 @@ int main(int argc, char* argv[]) {
     AmobaServer server;
     server.addClient(std::make_shared<SampleAmobaClient>());
     server.addClient(std::make_shared<SampleAmobaClient>());
-    server.run(70, 50);
+    server.run(20, 20);
     return 0;
 }
