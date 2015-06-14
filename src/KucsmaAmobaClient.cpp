@@ -12,6 +12,11 @@ std::ostream& operator<<(std::ostream& os, const AmobaClient::Position& p) {
 
 }
 
+std::string KucsmaAmobaClient::getName() const
+{
+    return "Qtsma";
+}
+
 bool KucsmaAmobaClient::isMoveWon(
     const Map& map, const AmobaClient::Position& p, int color)
 {

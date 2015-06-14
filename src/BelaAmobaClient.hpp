@@ -5,7 +5,19 @@
 
 class BelaAmobaClient : public AmobaClient
 {
+    struct Weighting
+    {
 
+        bool we;
+        int size;
+        int calculate;
+        Weighting(bool we, int size) :we(we), size(size), calculate(we ? 0 : size*size * 2){}
+
+        int operator()()
+        {
+            return calculate /= 2;
+        }
+    };
 public:
     virtual Position getMove(const Map& map, int yourColor, int playerCount)
     {
@@ -35,17 +47,16 @@ public:
 
                         ++countSame;
                     }
-
-                    for (int weight = countSame, xPrevs = x - 1; xPrevs >= 0 && map[xPrevs][y] == 0; --xPrevs)
+                    Weighting w1(origin == yourColor, countSame);
+                    for (int xPrevs = x - 1; xPrevs >= 0 && map[xPrevs][y] == 0; --xPrevs)
                     {
-                        weights[xPrevs][y] += weight;
-                        weight /= 2;
+                        weights[xPrevs][y] += w1();
                     }
 
-                    for (int weight = countSame, xNexts = sameEnd + 1; xNexts < w && map[xNexts][y] == 0; ++xNexts)
+                    Weighting w2(origin == yourColor, countSame);
+                    for (int xNexts = sameEnd; xNexts < w && map[xNexts][y] == 0; ++xNexts)
                     {
-                        weights[xNexts][y] += weight;
-                        weight /= 2;
+                        weights[xNexts][y] += w2();
                     }
                 }
 
@@ -54,6 +65,7 @@ public:
                 {
                     int countSame = 1;
                     int sameEnd = y + 1;
+
                     for (; sameEnd < h; ++sameEnd)
                     {
                         if (map[x][sameEnd] != origin)
@@ -62,16 +74,16 @@ public:
                         ++countSame;
                     }
 
-                    for (int weight = countSame, yPrevs = y - 1; yPrevs >= 0 && map[x][yPrevs] == 0; --yPrevs)
+                    Weighting w1(origin == yourColor, countSame);
+                    for (int yPrevs = y - 1; yPrevs >= 0 && map[x][yPrevs] == 0; --yPrevs)
                     {
-                        weights[x][yPrevs] += weight;
-                        weight /= 2;
+                        weights[x][yPrevs] += w1();
                     }
 
-                    for (int weight = countSame, yNexts = sameEnd + 1; yNexts < h && map[x][yNexts] == 0; ++yNexts)
+                    Weighting w2(origin == yourColor, countSame);
+                    for (int yNexts = sameEnd; yNexts < h && map[x][yNexts] == 0; ++yNexts)
                     {
-                        weights[x][yNexts] += weight;
-                        weight /= 2;
+                        weights[x][yNexts] += w2();
                     }
                 }
 
@@ -89,16 +101,16 @@ public:
                         ++countSame;
                     }
 
-                    for (int weight = countSame, xPrevs = x - 1, yPrevs = y - 1; xPrevs >= 0 && yPrevs >= 0 && map[xPrevs][yPrevs] == 0; --xPrevs,--yPrevs)
+                    Weighting w1(origin == yourColor, countSame);
+                    for (int xPrevs = x - 1, yPrevs = y - 1; xPrevs >= 0 && yPrevs >= 0 && map[xPrevs][yPrevs] == 0; --xPrevs,--yPrevs)
                     {
-                        weights[xPrevs][yPrevs] += weight;
-                        weight /= 2;
+                        weights[xPrevs][yPrevs] += w1();
                     }
 
-                    for (int weight = countSame, xNexts = sameXEnd + 1, yNexts = sameYEnd + 1; xNexts < w && yNexts < h && map[xNexts][yNexts] == 0; ++xNexts, ++yNexts)
+                    Weighting w2(origin == yourColor, countSame);
+                    for (int xNexts = sameXEnd, yNexts = sameYEnd; xNexts < w && yNexts < h && map[xNexts][yNexts] == 0; ++xNexts, ++yNexts)
                     {
-                        weights[xNexts][yNexts] += weight;
-                        weight /= 2;
+                        weights[xNexts][yNexts] += w2();
                     }
                 }
 
@@ -116,16 +128,16 @@ public:
                         ++countSame;
                     }
 
-                    for (int weight = countSame, xPrevs = x - 1, yPrevs = y + 1; xPrevs >= 0 && yPrevs < h && map[xPrevs][yPrevs] == 0; --xPrevs, ++yPrevs)
+                    Weighting w1(origin == yourColor, countSame);
+                    for (int xPrevs = x - 1, yPrevs = y + 1; xPrevs >= 0 && yPrevs < h && map[xPrevs][yPrevs] == 0; --xPrevs, ++yPrevs)
                     {
-                        weights[xPrevs][yPrevs] += weight;
-                        weight /= 2;
+                        weights[xPrevs][yPrevs] += w1();
                     }
 
-                    for (int weight = countSame, xNexts = sameXEnd + 1, yNexts = sameYEnd - 1; xNexts < w && yNexts >= 0 && map[xNexts][yNexts] == 0; ++xNexts, --yNexts)
+                    Weighting w2(origin == yourColor, countSame);
+                    for (int xNexts = sameXEnd, yNexts = sameYEnd; xNexts < w && yNexts >= 0 && map[xNexts][yNexts] == 0; ++xNexts, --yNexts)
                     {
-                        weights[xNexts][yNexts] += weight;
-                        weight /= 2;
+                        weights[xNexts][yNexts] += w2();
                     }
                 }
             }
@@ -147,8 +159,6 @@ public:
                 {
                     maxWeights.push_back(Position{ i, j });
                 }
-
-
             }
         }
 
@@ -156,5 +166,10 @@ public:
         static std::mt19937 g(rd());
 
         return maxWeights[std::uniform_int_distribution<int>(0, maxWeights.size() - 1)(g)];
+    }
+
+    virtual std::string getName() const
+    {
+        return "Bela";
     }
 };

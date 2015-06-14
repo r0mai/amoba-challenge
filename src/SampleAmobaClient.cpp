@@ -14,3 +14,9 @@ AmobaClient::Position SampleAmobaClient::getMove(
         }
     }
 }
+
+std::string SampleAmobaClient::getName() const
+{
+    return "Sample";
+}
+
