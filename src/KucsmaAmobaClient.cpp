@@ -55,7 +55,7 @@ bool KucsmaAmobaClient::isMoveWon(
     for (int x = xp-1, y = yp+1; x >= 0 && y < h && map[x][y] == color; --x, ++y) {
         ++toLowerLeft;
     }
-    for (int x = xp-1, y = yp-1; x < w && y >= 0 && map[x][y] == color; ++x, --y) {
+    for (int x = xp+1, y = yp-1; x < w && y >= 0 && map[x][y] == color; ++x, --y) {
         ++toUpperRight;
     }
     if (toLowerLeft + toUpperRight + 1 >= nInARow) {
@@ -155,7 +155,7 @@ AmobaClient::Position KucsmaAmobaClient::getMove(
     w = map.size();
     h = map[0].size();
 
-    nInARow = playerCount + 2;
+    nInARow = playerCount + 3;
     this->yourColor = yourColor;
     this->playerCount = playerCount;
 
