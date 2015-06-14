@@ -3,6 +3,15 @@
 
 #include <iostream>
 
+namespace {
+
+std::ostream& operator<<(std::ostream& os, const AmobaClient::Position& p) {
+    os << "(" << std::get<0>(p) << ", " << std::get<1>(p) << ")";
+    return os;
+}
+
+}
+
 bool KucsmaAmobaClient::isMoveWon(
     const Map& map, const AmobaClient::Position& p, int color)
 {
@@ -168,6 +177,7 @@ AmobaClient::Position KucsmaAmobaClient::getMove(
     //win if we can
     for (const Position& p : neighbours) {
         if (isMoveWon(map, p, yourColor)) {
+            std::cout << "Returning " << p << " from " << __LINE__ << std::endl;
             return p;
         }
     }
@@ -179,12 +189,13 @@ AmobaClient::Position KucsmaAmobaClient::getMove(
                 continue;
             }
             if (isMoveWon(map, p, player)) {
+                std::cout << "Returning " << p << " from " << __LINE__ << std::endl;
                 return p;
             }
         }
     }
 
-    double max = std::numeric_limits<double>::min();
+    double max = std::numeric_limits<double>::lowest();
     Position maxPos;
     for (const Position& p : neighbours) {
         double cur = runMonteCarlo(map, p);
@@ -193,5 +204,6 @@ AmobaClient::Position KucsmaAmobaClient::getMove(
             maxPos = p;
         }
     }
+    std::cout << "Returning " << maxPos << " from " << __LINE__ << std::endl;
     return maxPos;
 }
