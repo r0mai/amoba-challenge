@@ -67,6 +67,30 @@ bool KucsmaAmobaClient::isMoveWon(
 void KucsmaAmobaClient::randomMove(Map map, int withColor) {
 }
 
+std::vector<AmobaClient::Position> KucsmaAmobaClient::getNeighbours(
+    const Map& map)
+{
+    std::vector<Position> result;
+    for (int y = 0; y < h; ++y) {
+        for (int x = 0; x < w; ++x) {
+            if (map[x][y] != 0) {
+                continue;
+            }
+            Position p(x, y);
+            if (x > 0 && map[x-1][y] != 0) { result.push_back(p); continue; }
+            if (y > 0 && map[x][y-1] != 0) { result.push_back(p); continue; }
+            if (x < w-1 && map[x+1][y] != 0) { result.push_back(p); continue; }
+            if (y < h-1 && map[x][y+1] != 0) { result.push_back(p); continue; }
+
+            if (x > 0 && y > 0 && map[x-1][y-1] != 0) { result.push_back(p); continue; }
+            if (x > 0 && y < h-1 && map[x-1][y+1] != 0) { result.push_back(p); continue; }
+            if (x < w-1 && y > 0 && map[x+1][y-1] != 0) { result.push_back(p); continue; }
+            if (x < w-1 && y < h-1 && map[x+1][y+1] != 0) { result.push_back(p); continue; }
+        }
+    }
+    return result;
+}
+
 AmobaClient::Position KucsmaAmobaClient::getMove(
     const Map& map, int yourColor, int playerCount)
 {
