@@ -89,8 +89,8 @@ void AmobaServer::addClient(ClientPtr client) {
     clients.push_back(client);
 }
 
-void AmobaServer::run() {
-    AmobaClient::Map map{50, std::vector<int>{70, 0}};
+void AmobaServer::run(int xSize, int ySize) {
+    AmobaClient::Map map(xSize, std::vector<int>(ySize, 0));
 
     while (true) {
         int winner = hasNInARow(map, clients.size() + 3);
