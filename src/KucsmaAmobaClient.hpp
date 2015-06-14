@@ -8,7 +8,7 @@ public:
 
 private:
     void randomMove(Map map, int withColor);
-    bool isMoveWon(const Map& map, const AmobaClient::Position& p);
+    bool isMoveWon(const Map& map, const AmobaClient::Position& p, int color);
     std::vector<Position> getNeighbours(const Map& map);
 
     int nInARow;
