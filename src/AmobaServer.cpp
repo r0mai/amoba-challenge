@@ -26,7 +26,7 @@ void AmobaServer::run(int xSize, int ySize) {
         int winner = hasNInARow(map, clients.size() + 3);
 
         if (winner != 0) {
-            std::cout << "Player " << winner << " won" << std::endl;
+            std::cout << "Player " << winner << " won (" << clients[winner - 1]->getName() << ")" << std::endl;
             return;
         }
         if (!hasEmpty(map)) {
@@ -37,8 +37,8 @@ void AmobaServer::run(int xSize, int ySize) {
         auto position =
             clients[clientIndex]->getMove(map, clientIndex+1, clients.size());
 
-        int x = std::get<0>(position);
-        int y = std::get<1>(position);
+        unsigned x = std::get<0>(position);
+        unsigned y = std::get<1>(position);
 
         if (x < 0 || y < 0 || x >= map.size() || y >= map[0].size()) {
             std::cout << "Out of bounds" << std::endl;

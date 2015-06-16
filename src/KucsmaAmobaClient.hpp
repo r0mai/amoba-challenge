@@ -7,6 +7,7 @@
 class KucsmaAmobaClient : public AmobaClient {
 public:
     virtual Position getMove(const Map& map, int yourColor, int playerCount);
+    virtual std::string getName() const;
 
 private:
     bool isMoveWon(const Map& map, const AmobaClient::Position& p, int color);
