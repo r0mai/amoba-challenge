@@ -7,7 +7,7 @@ int hasNInARow(const Map& map, int n) {
     int w = map.size();
     int h = map[0].size();
 
-    for (int x = 0; x < w - n; ++x) {
+    for (int x = 0; x <= w - n; ++x) {
         for (int y = 0; y < h; ++y) {
             int origin = map[x][y];
             if (origin == 0) {
@@ -26,7 +26,7 @@ int hasNInARow(const Map& map, int n) {
     }
 
     for (int x = 0; x < w; ++x) {
-        for (int y = 0; y < h - n; ++y) {
+        for (int y = 0; y <= h - n; ++y) {
             int origin = map[x][y];
             if (origin == 0) {
                 continue;
@@ -43,8 +43,8 @@ int hasNInARow(const Map& map, int n) {
         }
     }
 
-    for (int x = 0; x < w - n; ++x) {
-        for (int y = 0; y < h - n; ++y) {
+    for (int x = 0; x <= w - n; ++x) {
+        for (int y = 0; y <= h - n; ++y) {
             int origin = map[x][y];
             if (origin == 0) {
                 continue;
@@ -62,7 +62,7 @@ int hasNInARow(const Map& map, int n) {
     }
 
     for (int x = n-1; x < w; ++x) {
-        for (int y = 0; y < h - n; ++y) {
+        for (int y = 0; y <= h - n; ++y) {
             int origin = map[x][y];
             if (origin == 0) {
                 continue;
