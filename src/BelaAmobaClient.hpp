@@ -27,7 +27,7 @@ class BelaAmobaClient : public AmobaClient
             // tavolsag /2
             // 
             return (std::get<1>(tpl) * std::get<1>(tpl) +
-                (std::get<0>(tpl) == we ? 2 : 0) +
+                (std::get<0>(tpl) == we) +
                 (std::get<3>(tpl) == Openness::open)) / 
                 std::get<2>(tpl);
         }
@@ -96,7 +96,7 @@ public:
                         ++countSame;
                     }
 
-                    Info::Openness op = static_cast<Info::Openness>((x == 0 || map[x - 1][y] != 0) + (x == w - 1 || map[x + 1][y] != 0));
+                    Info::Openness op = static_cast<Info::Openness>((x == 0 || map[x - 1][y] != 0) + (sameEnd >= w - 1 || map[sameEnd][y] != 0));
                     for (int xPrevs = x - 1; xPrevs >= 0 && map[xPrevs][y] == 0; --xPrevs)
                     {
                         weights[xPrevs][y].setNewWeight(origin, countSame, std::abs(xPrevs - x), Info::Direction::down, op);
@@ -122,7 +122,7 @@ public:
                         ++countSame;
                     }
 
-                    Info::Openness op = static_cast<Info::Openness>((y == 0 || map[x][y - 1] != 0) + (y == h - 1 || map[x][y + 1] != 0));
+                    Info::Openness op = static_cast<Info::Openness>((y == 0 || map[x][y - 1] != 0) + (sameEnd >= h - 1 || map[x][sameEnd] != 0));
                     for (int yPrevs = y - 1; yPrevs >= 0 && map[x][yPrevs] == 0; --yPrevs)
                     {
                         weights[x][yPrevs].setNewWeight(origin, countSame, std::abs(yPrevs - y), Info::Direction::right, op);
@@ -148,7 +148,8 @@ public:
                         ++countSame;
                     }
 
-                    Info::Openness op = static_cast<Info::Openness>((x == 0 || y == 0 || map[x - 1][y - 1] != 0) + (x == w - 1 || y == h - 1 || map[x + 1][y + 1] != 0));
+                    Info::Openness op = static_cast<Info::Openness>((x == 0 || y == 0 || map[x - 1][y - 1] != 0) + 
+                        (sameXEnd >= w - 1 || sameYEnd >= h - 1 || map[sameXEnd + 1][sameYEnd + 1] != 0));
                     for (int xPrevs = x - 1, yPrevs = y - 1; xPrevs >= 0 && yPrevs >= 0 && map[xPrevs][yPrevs] == 0; --xPrevs,--yPrevs)
                     {
                         weights[xPrevs][yPrevs].setNewWeight(origin, countSame, std::abs(yPrevs - y), Info::Direction::rightdown, op);
@@ -174,7 +175,8 @@ public:
                         ++countSame;
                     }
 
-                    Info::Openness op = static_cast<Info::Openness>((x == 0 || y == h - 1 || map[x - 1][y + 1] != 0) + (x == w - 1 || y == 0 || map[x + 1][y - 1] != 0));
+                    Info::Openness op = static_cast<Info::Openness>((x == 0 || sameYEnd >= h - 1 || map[x - 1][sameYEnd + 1] != 0) + 
+                        (sameXEnd >= w - 1 || y == 0 || map[sameXEnd + 1][y - 1] != 0));
                     for (int xPrevs = x - 1, yPrevs = y + 1; xPrevs >= 0 && yPrevs < h && map[xPrevs][yPrevs] == 0; --xPrevs, ++yPrevs)
                     {
                         weights[xPrevs][yPrevs].setNewWeight(origin, countSame, yPrevs - y, Info::Direction::leftdown, op);
