@@ -27,8 +27,8 @@ class BelaAmobaClient : public AmobaClient
             // tavolsag /2
             // 
             return (std::get<1>(tpl) * std::get<1>(tpl) +
-                (std::get<0>(tpl) == we) +
-                (std::get<3>(tpl) == Openness::open ? 2 : 0)) / 
+                (std::get<0>(tpl) == we ? 2 : 0) +
+                (std::get<3>(tpl) == Openness::open)) / 
                 std::get<2>(tpl);
         }
 
@@ -45,7 +45,7 @@ class BelaAmobaClient : public AmobaClient
                 }
                 else
                 {
-                    return calculate(tplv[0]) + calculate(tplv[1]) - 1;
+                    return calculate(tplv[0]) + calculate(tplv[1]);
                 }
             default: return 0;
             }
