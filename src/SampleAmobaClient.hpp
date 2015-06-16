@@ -1,5 +1,6 @@
 #pragma once
 
+#include <string>
 #include "AmobaClient.hpp"
 
 class SampleAmobaClient : public AmobaClient {
