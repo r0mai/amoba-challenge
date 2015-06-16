@@ -60,11 +60,11 @@ class BelaAmobaClient : public AmobaClient
 
         int getWeight() const
         {
-            return std::accumulate(weighting.begin(), weighting.end(), 0, 
-                [this](int a, const std::vector<std::tuple<int, int, int, Openness>>& tpl)
+            return calculate(*std::max_element(weighting.begin(), weighting.end(),
+                [this](const std::vector<std::tuple<int, int, int, Openness>>& tp0, const std::vector<std::tuple<int, int, int, Openness>>& tpl)
                 {
-                    return a + calculate(tpl); 
-                });
+                    return calculate(tp0) < calculate(tpl); 
+                }));
         }
     };
 
