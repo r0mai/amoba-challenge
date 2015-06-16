@@ -26,7 +26,7 @@ void AmobaServer::run(int xSize, int ySize) {
         int winner = hasNInARow(map, clients.size() + 3);
 
         if (winner != 0) {
-            std::cout << "Player " << winner << " won (" << clients[winner - 1]->getName() << ")" << std::endl;
+            std::cout << "Player " << winner << " (aka. " << playerToChar(winner) << ") won (" << clients[winner - 1]->getName() << ")" << std::endl;
             return;
         }
         if (!hasEmpty(map)) {

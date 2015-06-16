@@ -103,16 +103,21 @@ void printMap(const Map& map) {
     std::cout << std::string(w, '-') << std::endl;
     for (int y = 0; y < h; ++y) {
         for (int x = 0; x < w; ++x) {
-            switch (map[x][y]) {
-                case 0: std::cout << '.'; break;
-                case 1: std::cout << 'X'; break;
-                case 2: std::cout << 'O'; break;
-                default: std::cout << map[x][y]; break;
-            }
+            std::cout << playerToChar(map[x][y]);
         }
         std::cout << '\n';
     }
     std::cout << std::string(w, '-');
     std::cout << std::endl;
+}
+
+char playerToChar(int num)
+{
+    switch (num) {
+    case 0: return '.';
+    case 1: return 'X';
+    case 2: return 'O';
+    default: return num + '0';
+    }
 }
 
