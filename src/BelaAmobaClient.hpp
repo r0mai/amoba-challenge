@@ -261,20 +261,20 @@ public:
                 }
             }
         }
-        std::uint32_t maxWeight = weights[0][0].getWeight();
+        std::uint32_t maxWeight = 0;
         std::vector<Position> maxWeights;
         for (int j = 0; j < h; ++j)
         {
             for (int i = 0; i < w; ++i)
             {
                 std::cout << static_cast<char>('.' + (weights[i][j].getWeight() >> 24) );
-                if (maxWeight < weights[i][j].getWeight())
+                if (maxWeight < weights[i][j].getWeight() && map[i][j] == 0)
                 {
                     maxWeight = weights[i][j].getWeight();
                     maxWeights.clear();
                     maxWeights.push_back(Position{ i, j });
                 }
-                else if (maxWeight == weights[i][j].getWeight())
+                else if (maxWeight == weights[i][j].getWeight() && map[i][j] == 0)
                 {
                     maxWeights.push_back(Position{ i, j });
                 }
