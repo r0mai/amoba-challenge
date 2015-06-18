@@ -9,8 +9,9 @@ int main(int argc, char* argv[]) {
 
     AmobaServer server;
     //server.addClient(std::make_shared<KucsmaAmobaClient>());
+    //server.addClient(std::make_shared<BelaAmobaClient>());
     server.addClient(std::make_shared<ManualAmobaClient>());
-    server.addClient(std::make_shared<ManualAmobaClient>());
-    server.run(20, 20);
+    server.addClient(std::make_shared<BelaAmobaClient>());
+    server.run(true);
     return 0;
 }

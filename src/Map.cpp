@@ -4,18 +4,18 @@
 #include <string>
 
 int hasNInARow(const Map& map, int n) {
-    int w = map.size();
-    int h = map[0].size();
+    int w = map.width();
+    int h = map.height();
 
     for (int x = 0; x <= w - n; ++x) {
         for (int y = 0; y < h; ++y) {
-            int origin = map[x][y];
+            int origin = map.get(map.minX() + x, map.minY() + y);
             if (origin == 0) {
                 continue;
             }
             int i;
             for (i = 1; i < n; ++i) {
-                if (map[x+i][y] != origin) {
+                if (map.get(map.minX() + x + i, map.minY() + y) != origin) {
                     break;
                 }
             }
@@ -27,13 +27,13 @@ int hasNInARow(const Map& map, int n) {
 
     for (int x = 0; x < w; ++x) {
         for (int y = 0; y <= h - n; ++y) {
-            int origin = map[x][y];
+            int origin = map.get(map.minX() + x, map.minY() + y);
             if (origin == 0) {
                 continue;
             }
             int i;
             for (i = 1; i < n; ++i) {
-                if (map[x][y+i] != origin) {
+                if (map.get(map.minX() + x, map.minY() + y + i) != origin) {
                     break;
                 }
             }
@@ -45,13 +45,13 @@ int hasNInARow(const Map& map, int n) {
 
     for (int x = 0; x <= w - n; ++x) {
         for (int y = 0; y <= h - n; ++y) {
-            int origin = map[x][y];
+            int origin = map.get(map.minX() + x, map.minY() + y);
             if (origin == 0) {
                 continue;
             }
             int i;
             for (i = 1; i < n; ++i) {
-                if (map[x+i][y+i] != origin) {
+                if (map.get(map.minX() + x + i, map.minY() + y + i) != origin) {
                     break;
                 }
             }
@@ -63,13 +63,13 @@ int hasNInARow(const Map& map, int n) {
 
     for (int x = n-1; x < w; ++x) {
         for (int y = 0; y <= h - n; ++y) {
-            int origin = map[x][y];
+            int origin = map.get(map.minX() + x, map.minY() + y);
             if (origin == 0) {
                 continue;
             }
             int i;
             for (i = 1; i < n; ++i) {
-                if (map[x-i][y+i] != origin) {
+                if (map.get(map.minX() + x - i, map.minY() + y + i) != origin) {
                     break;
                 }
             }
@@ -83,12 +83,12 @@ int hasNInARow(const Map& map, int n) {
 }
 
 bool hasEmpty(const Map& map) {
-    int w = map.size();
-    int h = map[0].size();
+    int w = map.width();
+    int h = map.height();
 
     for (int x = 0; x < w; ++x) {
         for (int y = 0; y < h; ++y) {
-            if (map[x][y] == 0) {
+            if (map.get(map.minX() + x, map.minY() + y) == 0) {
                 return true;
             }
         }
@@ -97,17 +97,45 @@ bool hasEmpty(const Map& map) {
 }
 
 void printMap(const Map& map) {
-    int w = map.size();
-    int h = map[0].size();
+    int w = map.width();
+    int h = map.height();
 
-    std::cout << std::string(w, '-') << std::endl;
-    for (int y = 0; y < h; ++y) {
-        for (int x = 0; x < w; ++x) {
-            std::cout << playerToChar(map[x][y]);
-        }
-        std::cout << '\n';
+    std::cout << "/" << std::string(w + 2, '-') << "\\" << std::endl << "| ";
+    for (int x = 0; x < w; ++x) {
+        if (map.minX() + x == 0)
+            std::cout << "|";
+        else
+            std::cout << std::abs((map.minX() + x) % 10);
     }
-    std::cout << std::string(w, '-');
+    std::cout << " |" << std::endl;
+    for (int y = 0; y < h; ++y) {
+        std::cout << "|";
+        if (map.minY() + y == 0)
+            std::cout << "-";
+        else
+            std::cout << std::abs((map.minY() + y) % 10);
+
+        for (int x = 0; x < w; ++x) {
+            std::cout << playerToChar(map.get(map.minX() + x, map.minY() + y));
+        }
+
+        if (map.minY() + y == 0)
+            std::cout << "-";
+        else
+            std::cout << std::abs((map.minY() + y) % 10);
+
+        std::cout << "|\n";
+    }
+    
+    std::cout << "| ";
+
+    for (int x = 0; x < w; ++x) {
+        if (map.minX() + x == 0)
+            std::cout << "|";
+        else
+            std::cout << std::abs((map.minX() + x) % 10);
+    }
+    std::cout << " |" << std::endl << "\\" << std::string(w + 2, '-') << "/";
     std::cout << std::endl;
 }
 

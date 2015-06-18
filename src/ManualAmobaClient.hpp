@@ -21,7 +21,7 @@ public:
         {
             std::cout << "Your move is: ";
             std::cin >> x >> y;
-        } while (map[x][y] != 0);
+        } while (!map.valid(x, y) || map.get(x, y) != 0);
         return Position{ x, y };
     }
     virtual std::string getName() const
