@@ -34,16 +34,17 @@ class BelaAmobaClient : public AmobaClient
                 std::cerr << "we: " << (std::get<0>(tpl) == we) << 
                     " size: " << std::get<1>(tpl) <<
                     " distance: " << std::get<2>(tpl) << 
-                    " openness: " << (std::get<3>(tpl) == Openness::open) << 
+                    " open: " << (std::get<3>(tpl) == Openness::open) <<
+                    " half: " << (std::get<3>(tpl) == Openness::half) <<
                     " weight: " << calculate(tpl) <<
                     std::endl;
             }
             if (std::get<1>(tpl) == 0) 
                 return 0;
             // ide mágiázni valamit!!
-            return (std::get<1>(tpl) * std::get<1>(tpl) +
-                (std::get<0>(tpl) == we ? 2 : 0) +
-                (std::get<3>(tpl) == Openness::open)) /
+            return (std::get<1>(tpl) * 2 +
+                //(std::get<0>(tpl) == we) +
+                (std::get<3>(tpl) == Openness::open ? 2 : std::get<3>(tpl) == Openness::half ? 0 : -2)) /
                 (std::get<1>(tpl) > 2 ? std::get<2>(tpl) : 1);
         }
 
@@ -67,7 +68,20 @@ class BelaAmobaClient : public AmobaClient
                     {
                         return 0;
                     }
-                    return std::max(calculate(tplv[0], debug), calculate(tplv[1], debug));
+                    auto tr0 = tplv[0];
+                    auto tr1 = tplv[1];
+
+                    if (std::get<3>(tplv[0]) != Openness::open && std::get<2>(tplv[0]) <= 1)
+                    {
+                        std::get<3>(tr1) = static_cast<Openness>(1 + static_cast<int>(std::get<3>(tplv[1])));
+                    }
+
+                    if (std::get<3>(tplv[1]) != Openness::open && std::get<2>(tplv[1]) <= 1)
+                    {
+                        std::get<3>(tr0) = static_cast<Openness>(1 + static_cast<int>(std::get<3>(tplv[0])));
+                    }
+
+                    return std::max(calculate(tr0, debug), calculate(tr1, debug));
                 }
                 else
                 {

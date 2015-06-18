@@ -100,14 +100,42 @@ void printMap(const Map& map) {
     int w = map.width();
     int h = map.height();
 
-    std::cout << std::string(w, '-') << std::endl;
+    std::cout << "/" << std::string(w + 2, '-') << "\\" << std::endl << "| ";
+    for (int x = 0; x < w; ++x) {
+        if (map.minX() + x == 0)
+            std::cout << "|";
+        else
+            std::cout << std::abs((map.minX() + x) % 10);
+    }
+    std::cout << " |" << std::endl;
     for (int y = 0; y < h; ++y) {
+        std::cout << "|";
+        if (map.minY() + y == 0)
+            std::cout << "-";
+        else
+            std::cout << std::abs((map.minY() + y) % 10);
+
         for (int x = 0; x < w; ++x) {
             std::cout << playerToChar(map.get(map.minX() + x, map.minY() + y));
         }
-        std::cout << '\n';
+
+        if (map.minY() + y == 0)
+            std::cout << "-";
+        else
+            std::cout << std::abs((map.minY() + y) % 10);
+
+        std::cout << "|\n";
     }
-    std::cout << std::string(w, '-');
+    
+    std::cout << "| ";
+
+    for (int x = 0; x < w; ++x) {
+        if (map.minX() + x == 0)
+            std::cout << "|";
+        else
+            std::cout << std::abs((map.minX() + x) % 10);
+    }
+    std::cout << " |" << std::endl << "\\" << std::string(w + 2, '-') << "/";
     std::cout << std::endl;
 }
 
