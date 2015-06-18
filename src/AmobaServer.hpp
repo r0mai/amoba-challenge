@@ -10,6 +10,7 @@ public:
     using ClientPtrs = std::vector<ClientPtr>;
 
     void run(int xSize, int ySize);
+    void run();
 
     void addClient(ClientPtr client);
 private:

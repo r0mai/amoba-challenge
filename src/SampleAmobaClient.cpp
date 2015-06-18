@@ -2,15 +2,15 @@
 
 #include <cstdlib>
 
-AmobaClient::Position SampleAmobaClient::getMove(
+Position SampleAmobaClient::getMove(
     const Map& map, int yourColor, int playerCount)
 {
     while (true) {
-        int x = rand() % map.size();
-        int y = rand() % map[0].size();
+        int x = rand() % map.width() + map.minX();
+        int y = rand() % map.height() + map.minY();
 
-        if (map[x][y] == 0) {
-            return AmobaClient::Position{ x, y };
+        if (map.get(x, y) == 0) {
+            return Position{ x, y };
         }
     }
 }

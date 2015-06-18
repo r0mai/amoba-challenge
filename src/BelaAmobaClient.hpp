@@ -107,42 +107,42 @@ class BelaAmobaClient : public AmobaClient
 public:
     virtual Position getMove(const Map& map, int yourColor, int playerCount)
     {
-        int w = map.size();
-        int h = map[0].size();
+        int w = map.width();
+        int h = map.height();
         std::vector<std::vector<Info>> weights(w, std::vector<Info>(h, Info(yourColor, playerCount)));
 
 
         for (int y = 1; y < h-1; ++y) {
-            if (map[0][y] == 0)
+            if (map.get(map.minX(), map.minY() + y) == 0)
             {
                 weights[0][y].setNewWeight(-1, 0, 1, Info::Direction::down, Info::Openness::half);
                 weights[0][y].setNewWeight(-1, 0, 1, Info::Direction::leftdown, Info::Openness::half);
                 weights[0][y].setNewWeight(-1, 0, 1, Info::Direction::rightdown, Info::Openness::half);
             }
-            if (map[w-1][y] == 0)
+            if (map.get(map.maxX(), map.minY() + y) == 0)
             {
                 weights[w - 1][y].setNewWeight(-1, 0, 1, Info::Direction::down, Info::Openness::half);
                 weights[w - 1][y].setNewWeight(-1, 0, 1, Info::Direction::leftdown, Info::Openness::half);
                 weights[w - 1][y].setNewWeight(-1, 0, 1, Info::Direction::rightdown, Info::Openness::half);
             }
         }
-        if (map[0][0] == 0)
+        if (map.get(map.minX(), map.minY()) == 0)
             weights[0][0].setNewWeight(-1, 0, 1, Info::Direction::down, Info::Openness::half);
-        if (map[0][h - 1] == 0)
+        if (map.get(map.minX(), map.maxY()) == 0)
             weights[0][h - 1].setNewWeight(-1, 0, 1, Info::Direction::down, Info::Openness::half);
-        if (map[w - 1][0] == 0)
+        if (map.get(map.maxX(), map.minY()) == 0)
             weights[w - 1][0].setNewWeight(-1, 0, 1, Info::Direction::down, Info::Openness::half);
-        if (map[w - 1][h - 1] == 0)
+        if (map.get(map.maxX(), map.maxY()) == 0)
             weights[w - 1][h - 1].setNewWeight(-1, 0, 1, Info::Direction::down, Info::Openness::half);
 
         for (int x = 0; x < w; ++x) {
-            if (map[x][0] == 0)
+            if (map.get(map.minX() + x, map.minY()) == 0)
             {
                 weights[x][0].setNewWeight(-1, 0, 1, Info::Direction::right, Info::Openness::half);
                 weights[x][0].setNewWeight(-1, 0, 1, Info::Direction::leftdown, Info::Openness::half);
                 weights[x][0].setNewWeight(-1, 0, 1, Info::Direction::rightdown, Info::Openness::half);
             }
-            if (map[x][h-1] == 0)
+            if (map.get(map.minX() + x, map.maxY()) == 0)
             {
                 weights[x][h - 1].setNewWeight(-1, 0, 1, Info::Direction::right, Info::Openness::half);
                 weights[x][h - 1].setNewWeight(-1, 0, 1, Info::Direction::leftdown, Info::Openness::half);
@@ -150,117 +150,50 @@ public:
             }
 
             for (int y = 0; y < h; ++y) {
-                int origin = map[x][y];
+                int origin = map.get(map.minX() + x, map.minY() + y);
                 if (origin == 0) {
                     continue;
                 }
-                
-                // down
-                if (x == 0 || map[x - 1][y] != origin)
+                auto lambda = [&](int xvec, int yvec, Info::Direction dir)
                 {
-                    int countSame = 1;
-                    int sameEnd = x + 1;
-                    for (; sameEnd < w; ++sameEnd)
+                    if (!map.valid(map.minX() + x - xvec, map.minY() + y - yvec) ||
+                        map.get(map.minX() + x - xvec, map.minY() + y - yvec) != origin)
                     {
-                        if (map[sameEnd][y] != origin)
-                            break;
+                        int countSame = 1;
+                        for (; map.valid(map.minX() + x + countSame * xvec, map.minY() + y + countSame * yvec); ++countSame)
+                        {
+                            if (map.get(map.minX() + x + countSame * xvec, map.minY() + y + countSame * yvec) != origin)
+                            {
+                                break;
+                            }
+                        }
+                        Info::Openness op = static_cast<Info::Openness>(
+                            (!map.valid(map.minX() + x - xvec, map.minY() + y - yvec) ||
+                            map.get(map.minX() + x - xvec, map.minY() + y - yvec) != 0) +
+                            (!map.valid(map.minX() + x + countSame * xvec, map.minY() + y + countSame * yvec) ||
+                            map.get(map.minX() + x + countSame * xvec, map.minY() + y + countSame * yvec) != 0));
 
-                        ++countSame;
+
+                        for (int prevDist = 1; map.valid(map.minX() + x - prevDist * xvec, map.minY() + y - prevDist * yvec) &&
+                            map.get(map.minX() + x - prevDist * xvec, map.minY() + y - prevDist * yvec) == 0; ++prevDist)
+                        {
+                            weights[x - prevDist * xvec][y - prevDist * yvec].setNewWeight(origin, countSame, prevDist, dir, op);
+                        }
+
+                        for (int nextDist = countSame; map.valid(map.minX() + x + nextDist * xvec, map.minY() + y + nextDist * yvec) &&
+                            map.get(map.minX() + x + nextDist * xvec, map.minY() + y + nextDist * yvec) == 0; ++nextDist)
+                        {
+                            weights[x + nextDist * xvec][y + nextDist * yvec].setNewWeight(origin, countSame, nextDist - countSame + 1, dir, op);
+                        }
                     }
-
-                    Info::Openness op = static_cast<Info::Openness>((x == 0 || map[x - 1][y] != 0) + (sameEnd >= w - 1 || map[sameEnd][y] != 0));
-                    for (int xPrevs = x - 1; xPrevs >= 0 && map[xPrevs][y] == 0; --xPrevs)
-                    {
-                        weights[xPrevs][y].setNewWeight(origin, countSame, std::abs(xPrevs - x), Info::Direction::down, op);
-                    }
-
-                    for (int xNexts = sameEnd; xNexts < w && map[xNexts][y] == 0; ++xNexts)
-                    {
-                        weights[xNexts][y].setNewWeight(origin, countSame, xNexts - sameEnd + 1, Info::Direction::down, op);
-                    }
-                }
-
-                // right
-                if (y == 0 || map[x][y - 1] != origin)
-                {
-                    int countSame = 1;
-                    int sameEnd = y + 1;
-
-                    for (; sameEnd < h; ++sameEnd)
-                    {
-                        if (map[x][sameEnd] != origin)
-                            break;
-
-                        ++countSame;
-                    }
-
-                    Info::Openness op = static_cast<Info::Openness>((y == 0 || map[x][y - 1] != 0) + (sameEnd >= h - 1 || map[x][sameEnd] != 0));
-                    for (int yPrevs = y - 1; yPrevs >= 0 && map[x][yPrevs] == 0; --yPrevs)
-                    {
-                        weights[x][yPrevs].setNewWeight(origin, countSame, std::abs(yPrevs - y), Info::Direction::right, op);
-                    }
-
-                    for (int yNexts = sameEnd; yNexts < h && map[x][yNexts] == 0; ++yNexts)
-                    {
-                        weights[x][yNexts].setNewWeight(origin, countSame, yNexts - sameEnd + 1, Info::Direction::right, op);
-                    }
-                }
-
-                // rightdown
-                if (y == 0 || x == 0 || map[x - 1][y - 1] != origin)
-                {
-                    int countSame = 1;
-                    int sameXEnd = x + 1;
-                    int sameYEnd = y + 1;
-                    for (; sameXEnd < w && sameYEnd < h; ++sameXEnd, ++sameYEnd)
-                    {
-                        if (map[sameXEnd][sameYEnd] != origin)
-                            break;
-
-                        ++countSame;
-                    }
-
-                    Info::Openness op = static_cast<Info::Openness>((x == 0 || y == 0 || map[x - 1][y - 1] != 0) + 
-                        (sameXEnd >= w - 1 || sameYEnd >= h - 1 || map[sameXEnd + 1][sameYEnd + 1] != 0));
-                    for (int xPrevs = x - 1, yPrevs = y - 1; xPrevs >= 0 && yPrevs >= 0 && map[xPrevs][yPrevs] == 0; --xPrevs,--yPrevs)
-                    {
-                        weights[xPrevs][yPrevs].setNewWeight(origin, countSame, std::abs(yPrevs - y), Info::Direction::rightdown, op);
-                    }
-
-                    for (int xNexts = sameXEnd, yNexts = sameYEnd; xNexts < w && yNexts < h && map[xNexts][yNexts] == 0; ++xNexts, ++yNexts)
-                    {
-                        weights[xNexts][yNexts].setNewWeight(origin, countSame, yNexts - sameYEnd + 1, Info::Direction::rightdown, op);
-                    }
-                }
-
-                // leftdown
-                if (y == h - 1 || x == 0 || map[x - 1][y + 1] != origin)
-                {
-                    int countSame = 1;
-                    int sameXEnd = x + 1;
-                    int sameYEnd = y - 1;
-                    for (; sameXEnd < w && sameYEnd >= 0; ++sameXEnd, --sameYEnd)
-                    {
-                        if (map[sameXEnd][sameYEnd] != origin)
-                            break;
-
-                        ++countSame;
-                    }
-
-                    Info::Openness op = static_cast<Info::Openness>((x == 0 || sameYEnd >= h - 1 || map[x - 1][sameYEnd + 1] != 0) + 
-                        (sameXEnd >= w - 1 || y == 0 || map[sameXEnd + 1][y - 1] != 0));
-                    for (int xPrevs = x - 1, yPrevs = y + 1; xPrevs >= 0 && yPrevs < h && map[xPrevs][yPrevs] == 0; --xPrevs, ++yPrevs)
-                    {
-                        weights[xPrevs][yPrevs].setNewWeight(origin, countSame, yPrevs - y, Info::Direction::leftdown, op);
-                    }
-
-                    for (int xNexts = sameXEnd, yNexts = sameYEnd; xNexts < w && yNexts >= 0 && map[xNexts][yNexts] == 0; ++xNexts, --yNexts)
-                    {
-                        weights[xNexts][yNexts].setNewWeight(origin, countSame, xNexts - sameXEnd + 1, Info::Direction::leftdown, op);
-                    }
-                }
+                };
+                lambda(1, 0, Info::Direction::down); // down
+                lambda(0, 1, Info::Direction::right); // right
+                lambda(1, 1, Info::Direction::rightdown); // rightdown
+                lambda(1, -1, Info::Direction::leftdown); // leftdown
             }
         }
+
         std::uint32_t maxWeight = 0;
         std::vector<Position> maxWeights;
         for (int j = 0; j < h; ++j)
@@ -268,13 +201,13 @@ public:
             for (int i = 0; i < w; ++i)
             {
                 std::cout << static_cast<char>('.' + (weights[i][j].getWeight() >> 24) );
-                if (maxWeight < weights[i][j].getWeight() && map[i][j] == 0)
+                if (maxWeight < weights[i][j].getWeight() && map.get(map.minX() + i, map.minY() + j) == 0)
                 {
                     maxWeight = weights[i][j].getWeight();
                     maxWeights.clear();
                     maxWeights.push_back(Position{ i, j });
                 }
-                else if (maxWeight == weights[i][j].getWeight() && map[i][j] == 0)
+                else if (maxWeight == weights[i][j].getWeight() && map.get(map.minX() + i, map.minY() + j) == 0)
                 {
                     maxWeights.push_back(Position{ i, j });
                 }

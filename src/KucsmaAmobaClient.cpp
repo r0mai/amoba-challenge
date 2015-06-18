@@ -1,11 +1,11 @@
-
+#if 0
 #include "KucsmaAmobaClient.hpp"
 
 #include <iostream>
 
 namespace {
 
-std::ostream& operator<<(std::ostream& os, const AmobaClient::Position& p) {
+std::ostream& operator<<(std::ostream& os, const Position& p) {
     os << "(" << std::get<0>(p) << ", " << std::get<1>(p) << ")";
     return os;
 }
@@ -18,7 +18,7 @@ std::string KucsmaAmobaClient::getName() const
 }
 
 bool KucsmaAmobaClient::isMoveWon(
-    const Map& map, const AmobaClient::Position& p, int color)
+    const Map& map, const Position& p, int color)
 {
     int xp = std::get<0>(p);
     int yp = std::get<1>(p);
@@ -79,7 +79,7 @@ bool KucsmaAmobaClient::isMoveWon(
 }
 
 
-std::vector<AmobaClient::Position> KucsmaAmobaClient::getNeighbours(
+std::vector<Position> KucsmaAmobaClient::getNeighbours(
     const Map& map)
 {
     std::vector<Position> result;
@@ -164,7 +164,7 @@ double KucsmaAmobaClient::runMonteCarlo(const Map& origMap, Position initialMove
     return won - lost;
 }
 
-AmobaClient::Position KucsmaAmobaClient::getMove(
+Position KucsmaAmobaClient::getMove(
     const Map& map, int yourColor, int playerCount)
 {
     w = map.size();
@@ -212,3 +212,4 @@ AmobaClient::Position KucsmaAmobaClient::getMove(
     std::cout << "Returning " << maxPos << " from " << __LINE__ << std::endl;
     return maxPos;
 }
+#endif

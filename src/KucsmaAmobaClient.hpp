@@ -10,7 +10,7 @@ public:
     virtual std::string getName() const;
 
 private:
-    bool isMoveWon(const Map& map, const AmobaClient::Position& p, int color);
+    bool isMoveWon(const Map& map, const Position& p, int color);
     std::vector<Position> getNeighbours(const Map& map);
 
     double runMonteCarlo(const Map& map, Position initialMove);
