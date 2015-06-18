@@ -9,8 +9,7 @@ public:
     using ClientPtr = std::shared_ptr<AmobaClient>;
     using ClientPtrs = std::vector<ClientPtr>;
 
-    void run(int xSize, int ySize);
-    void run();
+    void run(bool isInfinite, int xSize = 20, int ySize = 20);
 
     void addClient(ClientPtr client);
 private:

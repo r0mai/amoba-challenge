@@ -41,9 +41,9 @@ class BelaAmobaClient : public AmobaClient
             if (std::get<1>(tpl) == 0) 
                 return 0;
             // ide mágiázni valamit!!
-            return (std::get<1>(tpl) * 5 +
-                (std::get<0>(tpl) == we ? 1 : 0) +
-                (std::get<3>(tpl) == Openness::open ? 0 : -2)) /
+            return (std::get<1>(tpl) * std::get<1>(tpl) +
+                (std::get<0>(tpl) == we ? 2 : 0) +
+                (std::get<3>(tpl) == Openness::open)) /
                 (std::get<1>(tpl) > 2 ? std::get<2>(tpl) : 1);
         }
 
@@ -221,7 +221,7 @@ public:
         auto pos = maxWeights[std::uniform_int_distribution<int>(0, maxWeights.size() - 1)(g)];
         std::cerr << "Position: " << std::get<0>(pos) << ", " << std::get<1>(pos) << std::endl;
         weights[std::get<0>(pos)][std::get<1>(pos)].getWeight(true);
-        return pos;
+        return Position{ map.minX() + std::get<0>(pos), map.minY() + std::get<1>(pos) };
     }
 
     virtual std::string getName() const

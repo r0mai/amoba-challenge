@@ -73,10 +73,10 @@ public:
 };
 
 class InfiniteMap : public Map, OverindexMap < Coordinate, OverindexMap<Coordinate, int> > {
-    int players;
+    int needToWin;
     Coordinate xMin, yMin, xMax, yMax;
 public:
-    InfiniteMap(int players) : players(players), xMin(-players), yMin(-players), xMax(players), yMax(players){}
+    InfiniteMap(int needToWin) : needToWin(needToWin), xMin(-needToWin), yMin(-needToWin), xMax(needToWin), yMax(needToWin){}
 
     Coordinate minX() const override { return xMin; }
     Coordinate minY() const override { return yMin; }
@@ -88,10 +88,10 @@ public:
 
     void set(Coordinate x, Coordinate y, int value) override {
         (*this)[x][y] = value;
-        xMin = std::min(xMin, x - players);
-        yMin = std::min(yMin, y - players);
-        xMax = std::min(xMax, x + players);
-        yMax = std::min(yMax, y + players);
+        xMin = std::min(xMin, x - needToWin);
+        yMin = std::min(yMin, y - needToWin);
+        xMax = std::max(xMax, x + needToWin);
+        yMax = std::max(yMax, y + needToWin);
     }
 
     int get(Coordinate x, Coordinate y) const override {

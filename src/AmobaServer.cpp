@@ -10,8 +10,12 @@ void AmobaServer::addClient(ClientPtr client) {
     clients.push_back(client);
 }
 
-void AmobaServer::run(int xSize, int ySize) {
-    std::unique_ptr<Map> map(std::make_unique<BoundedMap>(xSize, ySize));
+void AmobaServer::run(bool isInfinite, int xSize, int ySize) {
+    std::unique_ptr<Map> map;
+    if (isInfinite)
+        map = std::make_unique<InfiniteMap>(clients.size() + 3);
+    else
+        map = std::make_unique<BoundedMap>(xSize, ySize);
 
     static std::random_device rd;
     static std::mt19937 g(rd());
