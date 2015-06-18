@@ -42,9 +42,9 @@ class BelaAmobaClient : public AmobaClient
             if (std::get<1>(tpl) == 0) 
                 return 0;
             // ide mágiázni valamit!!
-            return (std::get<1>(tpl) * 2 +
-                //(std::get<0>(tpl) == we) +
-                (std::get<3>(tpl) == Openness::open ? 2 : std::get<3>(tpl) == Openness::half ? 0 : -2)) /
+            return (std::get<1>(tpl) * 4 +
+                (std::get<0>(tpl) == we) +
+                (std::get<3>(tpl) == Openness::open ? 4 : std::get<3>(tpl) == Openness::half ? 0 : -2)) /
                 (std::get<1>(tpl) > 2 ? std::get<2>(tpl) : 1);
         }
 
@@ -71,12 +71,12 @@ class BelaAmobaClient : public AmobaClient
                     auto tr0 = tplv[0];
                     auto tr1 = tplv[1];
 
-                    if (std::get<3>(tplv[0]) != Openness::open && std::get<2>(tplv[0]) <= 1)
+                    if (std::get<2>(tplv[0]) <= 1)
                     {
                         std::get<3>(tr1) = static_cast<Openness>(1 + static_cast<int>(std::get<3>(tplv[1])));
                     }
 
-                    if (std::get<3>(tplv[1]) != Openness::open && std::get<2>(tplv[1]) <= 1)
+                    if (std::get<2>(tplv[1]) <= 1)
                     {
                         std::get<3>(tr0) = static_cast<Openness>(1 + static_cast<int>(std::get<3>(tplv[0])));
                     }
@@ -114,6 +114,7 @@ class BelaAmobaClient : public AmobaClient
             std::vector<std::uint8_t> weights(4);
             std::transform(weighting.begin(), weighting.end(), weights.begin(), std::bind(&Info::calculateS, this, std::placeholders::_1, debug));
             std::sort(weights.begin(), weights.end(), std::greater<std::uint8_t>());
+            std::transform(weights.begin(), weights.end(), weights.begin(), [](const std::uint8_t& t){return t - t % 2; });
             return std::accumulate(weights.begin(), weights.end(), std::uint32_t(0), [](std::uint32_t res, std::uint8_t num){return (res << 8) + num; });
         }
     };
